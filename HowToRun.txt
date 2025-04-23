@@ -1,0 +1,10 @@
+//Flutter
+1. `flutter create projectName` to create the project
+2. Go to projectName->lib->main.dart, replace its code with whichever assignment you get
+3. Make sure you're in projectName directory, `flutter run` or `flutter run -d chrome` or `flutter run -d edge`
+4. Press q to quit or r to reload fast (in case of changes).
+
+//Dart
+1. `flutter create projectName` to create the project
+2. Go to projectName->lib->main.dart, replace its code with whichever assignment you get
+3. Make sure you're in projectName/lib directory, `dart run main.dart` to run the file.
