@@ -1,0 +1,260 @@
+###HTML###
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Music Album Page</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="manifest" href="manifest.json">
+</head>
+<body>
+  <header>
+    <h1>Music Albums</h1>
+  </header>
+
+  <main>
+    <div class="album-list">
+      <!-- Album 1 -->
+      <div class="album">
+        <img src="album1.jpg" alt="Album 1">
+        <h2>Album 1</h2>
+        <p class="singer">Singer: John Doe</p>
+        <h3>Songs:</h3>
+        <ul class="songs">
+          <li>Song 1</li>
+          <li>Song 2</li>
+          <li>Song 3</li>
+        </ul>
+      </div>
+
+      <!-- Album 2 -->
+      <div class="album">
+        <img src="album2.jpg" alt="Album 2">
+        <h2>Album 2</h2>
+        <p class="singer">Singer: Jane Smith</p>
+        <h3>Songs:</h3>
+        <ul class="songs">
+          <li>Song A</li>
+          <li>Song B</li>
+          <li>Song C</li>
+        </ul>
+      </div>
+
+      <!-- Add more albums as necessary -->
+    </div>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
+
+###STYLE.CSS###
+
+/* styles.css */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f7f7f7;
+}
+
+header {
+  background-color: #4CAF50;
+  color: white;
+  text-align: center;
+  padding: 20px;
+}
+
+.album-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  padding: 20px;
+}
+
+.album {
+  width: 250px;
+  border: 1px solid #ddd;
+  padding: 15px;
+  margin: 10px;
+  text-align: center;
+  border-radius: 8px;
+  background-color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.album img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 5px;
+}
+
+.album h2 {
+  font-size: 1.5em;
+  color: #333;
+}
+
+.album .singer {
+  color: #666;
+}
+
+.album .songs {
+  list-style-type: none;
+  padding: 0;
+}
+
+.album .songs li {
+  color: #555;
+  font-size: 0.9em;
+}
+/* styles.css */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f7f7f7;
+}
+
+header {
+  background-color: #4CAF50;
+  color: white;
+  text-align: center;
+  padding: 20px;
+}
+
+.album-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  padding: 20px;
+}
+
+.album {
+  width: 250px;
+  border: 1px solid #ddd;
+  padding: 15px;
+  margin: 10px;
+  text-align: center;
+  border-radius: 8px;
+  background-color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.album img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 5px;
+}
+
+.album h2 {
+  font-size: 1.5em;
+  color: #333;
+}
+
+.album .singer {
+  color: #666;
+}
+
+.album .songs {
+  list-style-type: none;
+  padding: 0;
+}
+
+.album .songs li {
+  color: #555;
+  font-size: 0.9em;
+}
+
+
+###APP.JS###
+
+// app.js
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('service-worker.js').then((registration) => {
+      console.log('Service Worker registered with scope: ', registration.scope);
+    }).catch((error) => {
+      console.log('Service Worker registration failed: ', error);
+    });
+  });
+}
+
+
+###SERVICE WORKER.JS###
+
+// service-worker.js
+const CACHE_NAME = 'music-album-cache-v1';
+const urlsToCache = [
+  '/',
+  '/index.html',
+  '/styles.css',
+  '/app.js',
+  '/album1.jpg',
+  '/album2.jpg', // Add more album images as necessary
+  '/manifest.json'
+];
+
+// Install event - caching resources
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      console.log('Opened cache');
+      return cache.addAll(urlsToCache);
+    })
+  );
+});
+
+// Fetch event - serving resources from cache
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    caches.match(event.request).then((cachedResponse) => {
+      return cachedResponse || fetch(event.request);
+    })
+  );
+});
+
+// Activate event - clean up old caches
+self.addEventListener('activate', (event) => {
+  const cacheWhitelist = [CACHE_NAME];
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => {
+          if (!cacheWhitelist.includes(cacheName)) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
+  );
+});
+
+
+###MANIFEST.JSON###
+
+
+// manifest.json
+{
+  "name": "Music Album Page",
+  "short_name": "Albums",
+  "description": "Browse through various music albums and songs.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4CAF50",
+  "icons": [
+    {
+      "src": "icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

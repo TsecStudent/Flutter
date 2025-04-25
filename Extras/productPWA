@@ -1,0 +1,177 @@
+###HTML###
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Product Page</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="manifest" href="manifest.json">
+</head>
+<body>
+  <header>
+    <h1>Our Products</h1>
+  </header>
+
+  <main>
+    <div class="product-list">
+      <div class="product">
+        <img src="product1.jpg" alt="Product 1">
+        <h2>Product 1</h2>
+        <p class="price">$10.00</p>
+        <p class="quantity">Available: 20</p>
+      </div>
+      <div class="product">
+        <img src="product2.jpg" alt="Product 2">
+        <h2>Product 2</h2>
+        <p class="price">$15.00</p>
+        <p class="quantity">Available: 30</p>
+      </div>
+      <!-- Add more products as necessary -->
+    </div>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
+
+
+###CSS###
+
+/* styles.css */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  background-color: #4CAF50;
+  color: white;
+  text-align: center;
+  padding: 20px;
+}
+
+.product-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  padding: 20px;
+}
+
+.product {
+  width: 200px;
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin: 10px;
+  text-align: center;
+  border-radius: 5px;
+}
+
+.product img {
+  max-width: 100%;
+  height: auto;
+}
+
+.product h2 {
+  font-size: 1.2em;
+  color: #333;
+}
+
+.product .price {
+  color: #4CAF50;
+  font-weight: bold;
+}
+
+.product .quantity {
+  color: #888;
+}
+
+###APP.JS###
+
+// app.js
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('service-worker.js').then((registration) => {
+      console.log('Service Worker registered with scope: ', registration.scope);
+    }).catch((error) => {
+      console.log('Service Worker registration failed: ', error);
+    });
+  });
+}
+
+
+###SERVICE_WORKER.JS###
+// service-worker.js
+const CACHE_NAME = 'product-page-cache-v1';
+const urlsToCache = [
+  '/',
+  '/index.html',
+  '/styles.css',
+  '/app.js',
+  '/product1.jpg',
+  '/product2.jpg', // Add more product images as necessary
+  '/manifest.json'
+];
+
+// Install event - caching resources
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      console.log('Opened cache');
+      return cache.addAll(urlsToCache);
+    })
+  );
+});
+
+// Fetch event - serving resources from cache
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    caches.match(event.request).then((cachedResponse) => {
+      return cachedResponse || fetch(event.request);
+    })
+  );
+});
+
+// Activate event - clean up old caches
+self.addEventListener('activate', (event) => {
+  const cacheWhitelist = [CACHE_NAME];
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => {
+          if (!cacheWhitelist.includes(cacheName)) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
+  );
+});
+
+
+###MANIFEST.JSON###
+
+// manifest.json
+{
+  "name": "Product Page",
+  "short_name": "Products",
+  "description": "Browse our awesome product collection.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4CAF50",
+  "icons": [
+    {
+      "src": "icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
